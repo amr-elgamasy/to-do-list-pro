@@ -16,8 +16,11 @@
 <body>
     <!-- الحاوية الرئيسية -->
     <div class="app-wrapper">
+        <!-- Overlay للشاشات الصغيرة -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- الشريط الجانبي -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-clipboard-check"></i>
@@ -67,8 +70,13 @@
             <header class="top-bar">
                 <div class="top-bar-content">
                     <div class="header-info">
-                        <h1 id="viewTitle">جميع المهام</h1>
-                        <p class="current-date" id="currentDate"></p>
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div>
+                            <h1 id="viewTitle">جميع المهام</h1>
+                            <p class="current-date" id="currentDate"></p>
+                        </div>
                     </div>
                     <div class="header-actions">
                         <button class="action-btn" id="exportBtn" title="تصدير المهام">

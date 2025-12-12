@@ -51,6 +51,11 @@ const editDueDateInput = document.getElementById('editDueDateInput');
 const saveEdit = document.getElementById('saveEdit');
 const cancelEdit = document.getElementById('cancelEdit');
 
+// عناصر القائمة للجوال
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
 // ==================== التهيئة ====================
 document.addEventListener('DOMContentLoaded', function() {
     loadTasksFromStorage();
@@ -77,8 +82,23 @@ function setupEventListeners() {
             currentView = item.dataset.view;
             updateViewTitle();
             renderTasks();
+            
+            // إغلاق القائمة على الجوال بعد الاختيار
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
         });
     });
+    
+    // زر القائمة للجوال
+    if (menuToggle) {
+        menuToggle.addEventListener('click', toggleSidebar);
+    }
+    
+    // الـ overlay لإغلاق القائمة
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    }
 
     // البحث والفلترة
     searchInput.addEventListener('input', renderTasks);
@@ -559,6 +579,17 @@ function loadTasksFromStorage() {
         console.error('خطأ في تحميل المهام:', error);
         tasks = [];
     }
+}
+
+// ==================== وظائف القائمة للجوال ====================
+function toggleSidebar() {
+    sidebar.classList.toggle('show');
+    sidebarOverlay.classList.toggle('show');
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('show');
+    sidebarOverlay.classList.remove('show');
 }
 
 
