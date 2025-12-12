@@ -972,12 +972,12 @@ body {
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-md);
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
     }
     
     .stat-card {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
     }
     
     .top-bar-content {
@@ -1003,13 +1003,18 @@ body {
     
     .filter-group {
         width: 100%;
-        flex-direction: column;
+        flex-direction: row;
         gap: var(--spacing-sm);
     }
     
-    .filter-select,
+    .filter-select {
+        flex: 1;
+        min-width: 0;
+    }
+    
     .clear-btn {
-        width: 100%;
+        flex: 1;
+        min-width: 0;
     }
     
     .input-group {
@@ -1101,8 +1106,27 @@ body {
     }
     
     .filter-select {
-        font-size: 0.85rem;
-        padding: 8px;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+    
+    .clear-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+    
+    .stat-icon {
+        font-size: 1.2rem;
+    }
+    
+    .filter-group {
+        flex-wrap: wrap;
+    }
+    
+    .filter-select,
+    .clear-btn {
+        flex: 1 1 calc(50% - var(--spacing-xs));
+        min-width: 120px;
     }
     
     .modal-content {
