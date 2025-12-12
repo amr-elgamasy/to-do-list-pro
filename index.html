@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المهام الاحترافي</title>
+    <!-- ربط ملف CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- خطوط جوجل العربية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- الحاوية الرئيسية -->
+    <div class="app-wrapper">
+        <!-- الشريط الجانبي -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h2>مدير المهام</h2>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="all">
+                    <i class="fas fa-th-large"></i>
+                    <span>جميع المهام</span>
+                    <span class="badge" id="navAllCount">0</span>
+                </button>
+                <button class="nav-item" data-view="today">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>اليوم</span>
+                    <span class="badge" id="navTodayCount">0</span>
+                </button>
+                <button class="nav-item" data-view="upcoming">
+                    <i class="fas fa-calendar-week"></i>
+                    <span>القادمة</span>
+                    <span class="badge" id="navUpcomingCount">0</span>
+                </button>
+                <button class="nav-item" data-view="important">
+                    <i class="fas fa-star"></i>
+                    <span>المهمة</span>
+                    <span class="badge" id="navImportantCount">0</span>
+                </button>
+                <button class="nav-item" data-view="completed">
+                    <i class="fas fa-check-double"></i>
+                    <span>المكتملة</span>
+                    <span class="badge" id="navCompletedCount">0</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span>الوضع الليلي</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <!-- الشريط العلوي -->
+            <header class="top-bar">
+                <div class="top-bar-content">
+                    <div class="header-info">
+                        <h1 id="viewTitle">جميع المهام</h1>
+                        <p class="current-date" id="currentDate"></p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn" id="exportBtn" title="تصدير المهام">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="action-btn" id="importBtn" title="استيراد المهام">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- شريط التقدم -->
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span>التقدم الإجمالي</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- بطاقات الإحصائيات -->
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="totalTasks">0</h3>
+                        <p>إجمالي المهام</p>
+                    </div>
+                </div>
+                <div class="stat-card completed">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="completedTasks">0</h3>
+                        <p>المهام المكتملة</p>
+                    </div>
+                </div>
+                <div class="stat-card pending">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="pendingTasks">0</h3>
+                        <p>المهام المعلقة</p>
+                    </div>
+                </div>
+                <div class="stat-card overdue">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="overdueTasks">0</h3>
+                        <p>المهام المتأخرة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم إضافة المهام -->
+            <div class="add-task-section">
+                <div class="input-group">
+                    <i class="fas fa-edit"></i>
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        placeholder="أضف مهمة جديدة..." 
+                        class="task-input"
+                        maxlength="200"
+                    >
+                </div>
+                
+                <div class="task-options">
+                    <div class="option-group">
+                        <label><i class="fas fa-flag"></i> الأولوية</label>
+                        <select id="prioritySelect" class="select-input">
+                            <option value="low">منخفضة</option>
+                            <option value="medium" selected>متوسطة</option>
+                            <option value="high">عالية</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label><i class="fas fa-folder"></i> الفئة</label>
+                        <select id="categorySelect" class="select-input">
+                            <option value="عمل">عمل</option>
+                            <option value="شخصي">شخصي</option>
+                            <option value="دراسة">دراسة</option>
+                            <option value="صحة">صحة</option>
+                            <option value="تسوق">تسوق</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label><i class="fas fa-calendar"></i> تاريخ الاستحقاق</label>
+                        <input type="date" id="dueDateInput" class="select-input">
+                    </div>
+                    
+                    <button id="addTaskBtn" class="add-task-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>إضافة المهمة</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- أدوات التحكم -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث عن مهمة...">
+                </div>
+                
+                <div class="filter-group">
+                    <select id="sortSelect" class="filter-select">
+                        <option value="date">ترتيب حسب: التاريخ</option>
+                        <option value="priority">ترتيب حسب: الأولوية</option>
+                        <option value="name">ترتيب حسب: الاسم</option>
+                        <option value="category">ترتيب حسب: الفئة</option>
+                    </select>
+                    
+                    <select id="filterPriority" class="filter-select">
+                        <option value="all">كل الأولويات</option>
+                        <option value="high">عالية</option>
+                        <option value="medium">متوسطة</option>
+                        <option value="low">منخفضة</option>
+                    </select>
+                    
+                    <button class="clear-btn" id="clearCompleted">
+                        <i class="fas fa-trash-alt"></i>
+                        حذف المكتملة
+                    </button>
+                </div>
+            </div>
+
+            <!-- قائمة المهام -->
+            <div class="tasks-container">
+                <ul id="taskList" class="task-list">
+                    <!-- سيتم إدراج المهام هنا ديناميكياً -->
+                </ul>
+
+                <!-- رسالة عند عدم وجود مهام -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>لا توجد مهام حالياً</h3>
+                    <p>ابدأ بإضافة مهمة جديدة لتنظيم يومك</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة تعديل المهمة المنبثقة -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> تعديل المهمة</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>نص المهمة</label>
+                    <input type="text" id="editTaskInput" class="modal-input">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الأولوية</label>
+                        <select id="editPrioritySelect" class="modal-input">
+                            <option value="low">منخفضة</option>
+                            <option value="medium">متوسطة</option>
+                            <option value="high">عالية</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الفئة</label>
+                        <select id="editCategorySelect" class="modal-input">
+                            <option value="عمل">عمل</option>
+                            <option value="شخصي">شخصي</option>
+                            <option value="دراسة">دراسة</option>
+                            <option value="صحة">صحة</option>
+                            <option value="تسوق">تسوق</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ الاستحقاق</label>
+                    <input type="date" id="editDueDateInput" class="modal-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelEdit">إلغاء</button>
+                <button class="btn-primary" id="saveEdit">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ربط ملف JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
