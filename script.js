@@ -158,6 +158,14 @@ function addTask() {
         return;
     }
 
+    if (!dueDate) {
+        showNotification('الرجاء اختيار تاريخ الاستحقاق', 'error');
+        dueDateInput.classList.add('shake');
+        setTimeout(() => dueDateInput.classList.remove('shake'), 500);
+        dueDateInput.focus();
+        return;
+    }
+
     const task = {
         id: Date.now(),
         text: text,
