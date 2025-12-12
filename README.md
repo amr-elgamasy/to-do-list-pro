@@ -437,6 +437,6 @@ For questions or feedback, please open an issue on GitHub.
 
 ---
 
-**Made with ❤️ by [Your Name]**
+**Made with ❤️ by [amr elgamasy]**
 
 Enjoy organizing your tasks! 🎉

@@ -56,15 +56,94 @@ const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 
+// ==================== نظام الأصوات ====================
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// صوت النجاح عند إضافة مهمة
+function playSuccessSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+}
+
+// صوت التنبيه للمهام القريبة
+function playAlertSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.3);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.4);
+}
+
+// التحقق من المهام القريبة
+function checkUpcomingTasks() {
+    const now = new Date();
+    const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    tasks.forEach(task => {
+        if (!task.completed && task.dueDate) {
+            const dueDate = new Date(task.dueDate);
+            const timeDiff = dueDate - now;
+            const hoursDiff = timeDiff / (1000 * 60 * 60);
+            
+            // تنبيه إذا كان موعد المهمة خلال 24 ساعة
+            if (hoursDiff > 0 && hoursDiff <= 24 && !task.alerted) {
+                playAlertSound();
+                showNotification(`تنبيه: المهمة "${task.text}" موعدها قريب!`, 'warning');
+                task.alerted = true;
+                saveTasksToStorage();
+            }
+        }
+    });
+}
+
 // ==================== التهيئة ====================
 document.addEventListener('DOMContentLoaded', function() {
     loadTasksFromStorage();
     loadThemePreference();
     displayCurrentDate();
+    setMinDate();
     setupEventListeners();
     renderTasks();
     updateAllStats();
+    
+    // التحقق من المهام القريبة كل ساعة
+    checkUpcomingTasks();
+    setInterval(checkUpcomingTasks, 60 * 60 * 1000);
 });
+
+// ==================== تعيين الحد الأدنى للتاريخ ====================
+function setMinDate() {
+    const today = new Date().toISOString().split('T')[0];
+    dueDateInput.setAttribute('min', today);
+    if (document.getElementById('editDueDateInput')) {
+        document.getElementById('editDueDateInput').setAttribute('min', today);
+    }
+}
 
 // ==================== إعداد المستمعات ====================
 function setupEventListeners() {
@@ -166,6 +245,19 @@ function addTask() {
         return;
     }
 
+    // التحقق من أن التاريخ ليس في الماضي
+    const selectedDate = new Date(dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // إعادة تعيين الوقت لمقارنة التواريخ فقط
+    
+    if (selectedDate < today) {
+        showNotification('لا يمكن إضافة مهمة بتاريخ قديم!', 'error');
+        dueDateInput.classList.add('shake');
+        setTimeout(() => dueDateInput.classList.remove('shake'), 500);
+        dueDateInput.focus();
+        return;
+    }
+
     const task = {
         id: Date.now(),
         text: text,
@@ -185,7 +277,11 @@ function addTask() {
     
     renderTasks();
     updateAllStats();
+    playSuccessSound();
     showNotification('تمت إضافة المهمة بنجاح', 'success');
+    
+    // التحقق من المهام القريبة بعد الإضافة
+    setTimeout(checkUpcomingTasks, 500);
 }
 
 function deleteTask(taskId) {
